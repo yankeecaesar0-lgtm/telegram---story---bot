@@ -1,9 +1,14 @@
 import os
-from telegram import Bot
 
-TOKEN = os.getenv("TOKEN")
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-print("TOKEN =", repr(TOKEN))
+TOKEN = os.getenv("8594936680:AAEA5qXLCbMRTp8TVUJz-C3Ti4cx_dIzAYQ")
 
-bot = Bot(TOKEN)
-print(bot.get_me())
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Use /story or /startstory to begin!")
+
+app = ApplicationBuilder().token(TOKEN).build()
+app.add_handler(CommandHandler("start", start))
+
+app.run_polling()
