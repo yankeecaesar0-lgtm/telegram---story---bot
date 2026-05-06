@@ -7,11 +7,10 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 TOKEN = os.getenv("TOKEN")
 URL = os.getenv("RENDER_EXTERNAL_URL")
 
-app = Flask(__name__)
+app = Flask(name)
+
 bot_app = ApplicationBuilder().token(TOKEN).build()
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Bot is live on webhook 🚀")
 
 bot_app.add_handler(CommandHandler("start", start))
 
@@ -21,11 +20,17 @@ def webhook():
     bot_app.update_queue.put_nowait(update)
     return "ok"
 
+
 @app.route("/")
 def home():
     return "Bot is running"
 
-if __name__ == "__main__":
-    asyncio.run(bot_app.initialize())
-    asyncio.run(bot_app.bot.set_webhook(f"{URL}/{TOKEN}"))
+async def setup():
+    await bot_app.initialize()
+    await bot_app.start()
+    await bot_app.bot.delete_webhook(drop_pending_updates=True)
+    await bot_app.bot.set_webhook(f"{URL}/{TOKEN}")
+
+if name == "main":
+    asyncio.run(setup())
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
