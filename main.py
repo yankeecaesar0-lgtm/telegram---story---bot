@@ -1,4 +1,5 @@
 import os
+import asyncio
 from flask import Flask, request
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
@@ -25,7 +26,6 @@ def home():
     return "Bot is running"
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(bot_app.initialize())
-    bot_app.bot.set_webhook(f"{URL}/{TOKEN}")  # ← yeh line fix ki
+    asyncio.run(bot_app.bot.set_webhook(f"{URL}/{TOKEN}"))
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
